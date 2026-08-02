@@ -19,8 +19,11 @@ async def run_for_ticker(ticker: str):
         "ticker": ticker,
         "run_mode": "fast"
     }
+    import uuid
+    config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     
-    result = await graph.ainvoke(initial_state)
+    # Run the graph
+    result = await graph.ainvoke(initial_state, config=config)
     logger.info(f"========== Completed Graph for {ticker} ==========")
     
     # Validate populated fields
@@ -46,7 +49,7 @@ async def run_for_ticker(ticker: str):
 async def main():
     load_dotenv()
     # Test AAPL only as per instruction
-    await run_for_ticker("AAPL")
+    await run_for_ticker("AMZN")
 
 if __name__ == "__main__":
     asyncio.run(main())

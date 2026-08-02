@@ -62,6 +62,21 @@ def fetch_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
         if operating_income is not None and revenue is not None:
             # operatingMargins is a percentage, convert to absolute
             operating_income = operating_income * revenue
+            
+        # Override with income statement data for exact period alignment
+        try:
+            fin = ticker.financials
+            if not fin.empty:
+                if 'Net Income' in fin.index:
+                    net_income = float(fin.loc['Net Income'].iloc[0])
+                if 'Operating Income' in fin.index:
+                    operating_income = float(fin.loc['Operating Income'].iloc[0])
+                if 'Gross Profit' in fin.index:
+                    gross_profit = float(fin.loc['Gross Profit'].iloc[0])
+                if 'Total Revenue' in fin.index:
+                    revenue = float(fin.loc['Total Revenue'].iloc[0])
+        except Exception:
+            pass
         
         current_assets = None
         current_liabilities = None
