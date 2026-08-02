@@ -66,7 +66,7 @@ function App() {
             )}
             
             {isComplete && (
-              <ReportView report={latestEvent.payload.final_report} />
+              <ReportView payload={latestEvent.payload} />
             )}
           </main>
         </div>

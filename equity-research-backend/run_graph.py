@@ -40,16 +40,31 @@ async def run_for_ticker(ticker: str):
     print(f"DCF populated: {dcf.get('wacc') is not None} (WACC: {dcf.get('wacc')})")
     
     red_flags = result.get("red_flags")
-    print(f"Red-Flags populated: {red_flags is not None} (Count: {len(red_flags) if red_flags is not None else 0})")
+    red_flags_valid = red_flags is not None
+    print(f"Red-Flags populated: {red_flags_valid} (Count: {len(red_flags) if red_flags else 0})")
     if red_flags:
         print(json.dumps(red_flags, indent=2))
+        
+    final_report = result.get("final_report")
+    citations = result.get("citations")
+    eval_metrics = result.get("eval_metrics")
+    
+    print("\n--- Synthesis Output ---")
+    if final_report:
+        print(json.dumps(final_report, indent=2))
+    else:
+        print("No final report generated.")
+        
+    print("\n--- Eval Metrics ---")
+    if eval_metrics:
+        print(json.dumps(eval_metrics, indent=2))
         
     print("--------------------------\n")
 
 async def main():
     load_dotenv()
     # Test AAPL only as per instruction
-    await run_for_ticker("AMZN")
+    await run_for_ticker("AAPL")
 
 if __name__ == "__main__":
     asyncio.run(main())

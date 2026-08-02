@@ -1,4 +1,5 @@
 import logging
+import os
 from langgraph.graph import StateGraph, START, END
 from app.graph.state import AgentState
 from app.graph.nodes.ingestion import run_ingestion_node_async
@@ -22,9 +23,47 @@ async def fan_in(state: AgentState, config: RunnableConfig) -> dict:
     logger.info(f"Fan-in completed for {state.get('ticker')}")
     return {}
 
+from app.graph.nodes.synthesis import synthesis_node as real_synthesis_node
+from app.guardrails.citation_check import check_citations
+from app.evals.metrics import compute_eval_metrics
+
+from app.export.pdf_export import export_to_pdf
+from app.export.markdown_export import export_to_markdown
+
 async def synthesis_node(state: AgentState, config: RunnableConfig) -> dict:
-    logger.info(f"Synthesis Agent completed for {state.get('ticker')}")
-    return {}
+    logger.info(f"Running Synthesis Agent for {state.get('ticker')}")
+    
+    # 1. Run Synthesis
+    synth_result = await real_synthesis_node(state, config)
+    final_report = synth_result.get("final_report")
+    
+    if not final_report:
+        return {"final_report": None, "citations": [], "eval_metrics": {}}
+        
+    # 2. Run Citation Enforcement
+    citation_result = await check_citations(final_report, state)
+    
+    # 3. Compute Eval Metrics
+    eval_metrics = compute_eval_metrics(
+        total_claims=citation_result.total_claims_checked,
+        unsupported_claims=citation_result.unsupported_claims
+    )
+    
+    # Construct updated state for export
+    updated_state = {**state, "final_report": final_report, "citations": citation_result.unsupported_claims, "eval_metrics": eval_metrics}
+    
+    # 4. Export
+    ticker = state.get("ticker", "UNKNOWN")
+    output_dir = os.path.join(os.path.dirname(__file__), '..', '..', 'output')
+    export_to_pdf(updated_state, os.path.join(output_dir, f"{ticker}_report.pdf"))
+    export_to_markdown(updated_state, os.path.join(output_dir, f"{ticker}_report.md"))
+    
+    logger.info(f"Synthesis Agent completed for {ticker}")
+    return {
+        "final_report": final_report,
+        "citations": citation_result.unsupported_claims,
+        "eval_metrics": eval_metrics
+    }
 
 async def human_review_node(state: AgentState, config: RunnableConfig) -> dict:
     # Passthrough node just to act as an interrupt point

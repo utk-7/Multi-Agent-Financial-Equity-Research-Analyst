@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equity Research Report - {{ state.ticker }}</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        .disclaimer { font-size: 0.9em; color: #7f8c8d; font-style: italic; background: #f9f9f9; padding: 10px; border-left: 4px solid #e74c3c; margin-bottom: 20px; }
+        .section { margin-bottom: 30px; }
+        .metrics-grid { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; }
+        .metric-box { flex: 1; min-width: 200px; background: #f8f9fa; padding: 15px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .metric-label { font-size: 0.8em; text-transform: uppercase; color: #6c757d; }
+        .metric-value { font-size: 1.5em; font-weight: bold; color: #2c3e50; margin-top: 5px; }
+        .red-flag { background: #fff3f3; border-left: 4px solid #dc3545; padding: 10px 15px; margin-bottom: 10px; }
+        .flag-title { font-weight: bold; color: #dc3545; }
+        .flag-desc { font-size: 0.9em; margin-top: 5px; }
+        .eval-section { margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee; }
+        .unsupported-claim { background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin-top: 10px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Equity Research Report: {{ state.ticker }}</h1>
+        <p>{{ state.fundamentals.company_name if state.fundamentals else state.ticker }}</p>
+    </div>
+
+    {% if state.final_report and state.final_report.disclaimer %}
+    <div class="disclaimer">
+        {{ state.final_report.disclaimer }}
+    </div>
+    {% endif %}
+
+    <div class="section">
+        <h2>Executive Summary</h2>
+        <p>{{ state.final_report.executive_summary if state.final_report else 'No summary available.' }}</p>
+    </div>
+
+    <div class="metrics-grid">
+        {% if state.fundamentals %}
+        <div class="metric-box">
+            <div class="metric-label">Market Cap</div>
+            <div class="metric-value">${{ "{:,.0f}".format(state.fundamentals.market_cap) if state.fundamentals.market_cap else 'N/A' }}</div>
+        </div>
+        <div class="metric-box">
+            <div class="metric-label">Revenue</div>
+            <div class="metric-value">${{ "{:,.0f}".format(state.fundamentals.revenue) if state.fundamentals.revenue else 'N/A' }}</div>
+        </div>
+        {% endif %}
+        {% if state.dcf_valuation %}
+        <div class="metric-box">
+            <div class="metric-label">WACC</div>
+            <div class="metric-value">{{ "{:.2f}%".format(state.dcf_valuation.wacc * 100) if state.dcf_valuation.wacc else 'N/A' }}</div>
+        </div>
+        {% endif %}
+        {% if state.news_sentiment %}
+        <div class="metric-box">
+            <div class="metric-label">News Sentiment</div>
+            <div class="metric-value">{{ "{:.2f}".format(state.news_sentiment.sentiment_score) if state.news_sentiment.sentiment_score else 'N/A' }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Bull Case</h2>
+        <p>{{ state.final_report.bull_case if state.final_report else 'N/A' }}</p>
+    </div>
+
+    <div class="section">
+        <h2>Bear Case</h2>
+        <p>{{ state.final_report.bear_case if state.final_report else 'N/A' }}</p>
+    </div>
+
+    <div class="section">
+        <h2>Synthesized View</h2>
+        <p>{{ state.final_report.synthesized_view if state.final_report else 'N/A' }}</p>
+    </div>
+
+    <div class="section">
+        <h2>Key Financial Ratios</h2>
+        <ul>
+            {% if state.ratios %}
+                {% for key, value in state.ratios.items() %}
+                <li><strong>{{ key | replace('_', ' ') | title }}:</strong> {{ "{:.2f}".format(value) if value is number else value }}</li>
+                {% endfor %}
+            {% else %}
+                <li>No ratios calculated.</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Approved Red Flags ({{ state.red_flags | length if state.red_flags else 0 }})</h2>
+        {% if state.red_flags and state.red_flags | length > 0 %}
+            {% for flag in state.red_flags %}
+                {% if flag.flagged %}
+                <div class="red-flag">
+                    <div class="flag-title">{{ flag.type }} (Severity: {{ flag.severity | upper }}) - Source: {{ flag.source }}</div>
+                    <div class="flag-desc">{{ flag.description }}</div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p>No critical red flags identified.</p>
+        {% endif %}
+    </div>
+
+    <div class="eval-section">
+        <h2>Report Evaluation Metrics</h2>
+        {% if state.eval_metrics %}
+            <p><strong>Citation Coverage:</strong> {{ state.eval_metrics.citation_coverage_percent }}%</p>
+            <p><strong>Strictly Grounded:</strong> {{ 'Yes' if state.eval_metrics.groundedness else 'No' }}</p>
+            <p><strong>Total Claims Checked:</strong> {{ state.eval_metrics.total_claims }}</p>
+            
+            {% if not state.eval_metrics.groundedness %}
+                <h3>Unsupported Claims Found:</h3>
+                {% for claim in state.eval_metrics.unsupported_claims %}
+                    <div class="unsupported-claim">{{ claim }}</div>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <p>Evaluation metrics not available.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,8 +1,17 @@
 import React from 'react';
 import { AlertTriangle, TrendingUp, TrendingDown, BookOpen, BarChart3, Scale } from 'lucide-react';
+import SensitivityGrid from './SensitivityGrid';
+import RatioTrendChart from './RatioTrendChart';
 
-export default function ReportView({ report }) {
-  if (!report) return null;
+export default function ReportView({ payload }) {
+  if (!payload) return null;
+
+  const report = payload.final_report || {};
+  const metrics = payload.eval_metrics || {};
+  const citations = payload.citations || [];
+  const ratios = payload.ratio_table || {};
+  const redFlags = payload.red_flags || [];
+  const valuation = payload.valuation_range || {};
 
   return (
     <div className="w-full max-w-4xl mx-auto p-8 bg-white dark:bg-finance-card rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden mt-6">
@@ -15,12 +24,12 @@ export default function ReportView({ report }) {
             <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
               <BookOpen className="w-4 h-4 text-finance-accent" />
               <span className="font-semibold text-slate-900 dark:text-white">Coverage:</span> 
-              {report.eval_metrics.citation_coverage_pct}%
+              {metrics.citation_coverage_percent ?? 0}%
             </span>
             <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
               <Scale className="w-4 h-4 text-finance-accent" />
               <span className="font-semibold text-slate-900 dark:text-white">Grounded:</span> 
-              {report.eval_metrics.groundedness_flag ? 'Yes ✅' : 'No ❌'}
+              {metrics.groundedness ? 'Yes ✅' : 'No ❌'}
             </span>
           </div>
         </div>
@@ -37,7 +46,7 @@ export default function ReportView({ report }) {
             Executive Summary
           </h3>
           <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-[17px]">
-            {report.thesis_summary}
+            {report.executive_summary}
           </p>
         </section>
 
@@ -60,6 +69,16 @@ export default function ReportView({ report }) {
             </p>
           </section>
         </div>
+        
+        {/* Synthesized View */}
+        <section>
+          <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-200 mb-4 flex items-center gap-2">
+            Synthesized View
+          </h3>
+          <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-[17px]">
+            {report.synthesized_view}
+          </p>
+        </section>
 
         {/* Financial Ratios & Valuation */}
         <section>
@@ -71,42 +90,51 @@ export default function ReportView({ report }) {
               <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Key Ratios</h4>
               <table className="w-full text-left border-collapse">
                 <tbody>
-                  {Object.entries(report.ratio_table || {}).map(([key, val]) => (
+                  {Object.entries(ratios).map(([key, val]) => {
+                    if (typeof val === 'object') return null; // Skip non-numeric fields if any
+                    return (
                     <tr key={key} className="border-b border-slate-200 dark:border-slate-700/50 last:border-0">
-                      <td className="py-2.5 text-[15px] text-slate-700 dark:text-slate-300">{key}</td>
-                      <td className="py-2.5 text-right font-medium text-slate-900 dark:text-white">{val}</td>
+                      <td className="py-2.5 text-[15px] text-slate-700 dark:text-slate-300 capitalize">{key.replace(/_/g, ' ')}</td>
+                      <td className="py-2.5 text-right font-medium text-slate-900 dark:text-white">
+                        {typeof val === 'number' ? val.toLocaleString(undefined, {maximumFractionDigits: 2}) : val}
+                      </td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
             </div>
             <div className="bg-slate-50 dark:bg-slate-800/40 p-5 rounded-lg border border-slate-200 dark:border-slate-700/50">
               <h4 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">DCF Scenarios</h4>
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse mb-6">
                 <tbody>
-                  {Object.entries(report.valuation_range || {}).map(([scenario, val]) => (
+                  {['bear_case', 'base_case', 'bull_case'].map((scenario) => {
+                    const val = valuation[scenario];
+                    if (!val) return null;
+                    return (
                     <tr key={scenario} className="border-b border-slate-200 dark:border-slate-700/50 last:border-0">
-                      <td className="py-2.5 text-[15px] text-slate-700 dark:text-slate-300">{scenario} Case</td>
-                      <td className="py-2.5 text-right font-medium text-slate-900 dark:text-white">${val}</td>
+                      <td className="py-2.5 text-[15px] text-slate-700 dark:text-slate-300 capitalize">{scenario.replace('_', ' ')}</td>
+                      <td className="py-2.5 text-right font-medium text-slate-900 dark:text-white">${val.toLocaleString()}</td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
+              <SensitivityGrid dcfValuation={valuation} />
             </div>
           </div>
+          <RatioTrendChart ratios={ratios} />
         </section>
 
         {/* Red Flags */}
-        {report.red_flags?.length > 0 && (
+        {redFlags.length > 0 && (
           <section className="bg-amber-50/30 dark:bg-amber-900/5 p-6 rounded-xl border border-amber-200/50 dark:border-amber-800/30">
             <h3 className="text-lg font-semibold text-amber-700 dark:text-amber-500 mb-4 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5" /> Verified Red Flags
             </h3>
             <ul className="space-y-3 text-[15px] text-slate-700 dark:text-slate-300">
-              {report.red_flags.map((flag, idx) => (
+              {redFlags.map((flag, idx) => (
                 <li key={idx} className="flex gap-3">
                   <span className="text-amber-500 font-bold">•</span>
-                  <span>{flag.description}</span>
+                  <span><strong>{flag.type}:</strong> {flag.description}</span>
                 </li>
               ))}
             </ul>
@@ -114,14 +142,20 @@ export default function ReportView({ report }) {
         )}
         
         {/* Citations */}
+        {citations.length > 0 && (
         <section className="pt-6 border-t border-slate-200 dark:border-slate-700">
-          <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Sources & Citations</h3>
-          <ol className="list-decimal pl-5 text-sm text-slate-600 dark:text-slate-500 space-y-2">
-            {report.citations?.map((cite, idx) => (
-              <li key={idx}>{cite}</li>
+          <h3 className="text-sm font-semibold text-red-500 uppercase tracking-wider mb-4">Unsupported Claims (Citation Issues)</h3>
+          <ul className="list-disc pl-5 text-sm text-red-600 dark:text-red-400 space-y-2">
+            {citations.map((cite, idx) => (
+              <li key={idx}><strong>{cite.claim}</strong>: {cite.reasoning}</li>
             ))}
-          </ol>
+          </ul>
         </section>
+        )}
+      </div>
+      
+      <div className="mt-8 text-center text-xs text-slate-400 dark:text-slate-500 border-t border-slate-200 dark:border-slate-700 pt-4">
+        {report.disclaimer || "This is research synthesis, not investment advice."}
       </div>
     </div>
   );

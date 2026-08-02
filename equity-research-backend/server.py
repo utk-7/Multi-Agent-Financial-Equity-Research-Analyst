@@ -62,7 +62,13 @@ async def run_graph_endpoint(req: RunRequest):
                 logger.info("Resume event triggered. Emitting run_resumed.")
                 yield f"event: run_resumed\ndata: {json.dumps({'status': 'resumed'})}\n\n"
             
-            yield f"event: complete\ndata: {json.dumps({'status': 'done'})}\n\n"
+            # Get final state from snapshot
+            state_snap = graph.get_state(config)
+            final_report = state_snap.values.get("final_report", {})
+            eval_metrics = state_snap.values.get("eval_metrics", {})
+            citations = state_snap.values.get("citations", [])
+            
+            yield f"event: run_completed\ndata: {json.dumps({'status': 'done', 'final_report': final_report, 'eval_metrics': eval_metrics, 'citations': citations})}\n\n"
             
         except Exception as e:
             logger.error(f"Error in graph execution: {e}")
