@@ -15,39 +15,43 @@ def get_headers():
     }
 
 async def fetch_10k_text(ticker: str) -> Tuple[Optional[str], Optional[str]]:
-    async with httpx.AsyncClient(headers=get_headers()) as client:
-        cik = await _get_cik(client, ticker)
-        if not cik:
-            logger.error(f"Could not find CIK for ticker {ticker}")
-            return None, None
-            
-        submissions_url = f"https://data.sec.gov/submissions/CIK{cik}.json"
-        resp = await client.get(submissions_url)
-        resp.raise_for_status()
-        data = resp.json()
-        
-        recent = data.get("filings", {}).get("recent", {})
-        forms = recent.get("form", [])
-        accessions = recent.get("accessionNumber", [])
-        primary_docs = recent.get("primaryDocument", [])
-        
-        doc_url = None
-        for i, form in enumerate(forms):
-            if form == "10-K":
-                accession = accessions[i].replace("-", "")
-                doc_name = primary_docs[i]
-                doc_url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession}/{doc_name}"
-                break
+    try:
+        async with httpx.AsyncClient(headers=get_headers(), timeout=10.0) as client:
+            cik = await _get_cik(client, ticker)
+            if not cik:
+                logger.error(f"Could not find CIK for ticker {ticker}")
+                return None, None
                 
-        if not doc_url:
-            logger.error(f"Could not find a 10-K filing for {ticker}")
-            return None, None
+            submissions_url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+            resp = await client.get(submissions_url)
+            resp.raise_for_status()
+            data = resp.json()
             
-        doc_resp = await client.get(doc_url)
-        doc_resp.raise_for_status()
-        raw_html = doc_resp.text
-        
-        return _extract_sections(raw_html)
+            recent = data.get("filings", {}).get("recent", {})
+            forms = recent.get("form", [])
+            accessions = recent.get("accessionNumber", [])
+            primary_docs = recent.get("primaryDocument", [])
+            
+            doc_url = None
+            for i, form in enumerate(forms):
+                if form == "10-K":
+                    accession = accessions[i].replace("-", "")
+                    doc_name = primary_docs[i]
+                    doc_url = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{accession}/{doc_name}"
+                    break
+                    
+            if not doc_url:
+                logger.error(f"Could not find a 10-K filing for {ticker}")
+                return None, None
+                
+            doc_resp = await client.get(doc_url)
+            doc_resp.raise_for_status()
+            raw_html = doc_resp.text
+            
+            return _extract_sections(raw_html)
+    except Exception as e:
+        logger.error(f"Error fetching 10-K for {ticker} from SEC EDGAR: {e}")
+        return None, None
 
 async def _get_cik(client: httpx.AsyncClient, ticker: str) -> Optional[str]:
     resp = await client.get("https://www.sec.gov/files/company_tickers.json")

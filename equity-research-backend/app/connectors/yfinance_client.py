@@ -39,8 +39,48 @@ def fetch_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
             except Exception:
                 pass
                 
-        free_cash_flow = get_val(["freeCashflow"])
         operating_cash_flow = get_val(["operatingCashflow"])
+        free_cash_flow = get_val(["freeCashflow"])
+        
+        # Override with statement data for exact period alignment
+        try:
+            cf = ticker.cashflow
+            if not cf.empty:
+                ocf_row = cf.loc['Operating Cash Flow'] if 'Operating Cash Flow' in cf.index else None
+                capex_row = cf.loc['Capital Expenditure'] if 'Capital Expenditure' in cf.index else None
+                
+                if ocf_row is not None:
+                    operating_cash_flow = float(ocf_row.iloc[0])
+                    # Manual FCF (OCF + CapEx since CapEx is reported as negative)
+                    if capex_row is not None:
+                        free_cash_flow = float(ocf_row.iloc[0]) + float(capex_row.iloc[0])
+        except Exception:
+            pass
+        
+        gross_profit = get_val(["grossProfits", "grossProfit"])
+        operating_income = get_val(["operatingMargins"])
+        if operating_income is not None and revenue is not None:
+            # operatingMargins is a percentage, convert to absolute
+            operating_income = operating_income * revenue
+        
+        current_assets = None
+        current_liabilities = None
+        
+        try:
+            bs = ticker.balance_sheet
+            if not bs.empty:
+                for label in ['Current Assets', 'Total Current Assets']:
+                    if label in bs.index:
+                        current_assets = float(bs.loc[label].iloc[0])
+                        break
+                for label in ['Current Liabilities', 'Total Current Liabilities']:
+                    if label in bs.index:
+                        current_liabilities = float(bs.loc[label].iloc[0])
+                        break
+        except Exception:
+            pass
+            
+        beta = get_val(["beta"])
         
         return FundamentalsSchema(
             ticker=ticker_symbol,
@@ -51,7 +91,12 @@ def fetch_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
             total_debt=total_debt,
             total_equity=total_equity,
             free_cash_flow=free_cash_flow,
-            operating_cash_flow=operating_cash_flow
+            operating_cash_flow=operating_cash_flow,
+            gross_profit=gross_profit,
+            operating_income=operating_income,
+            current_assets=current_assets,
+            current_liabilities=current_liabilities,
+            beta=beta
         )
     except Exception as e:
         logger.error(f"Error fetching fundamentals for {ticker_symbol}: {e}")

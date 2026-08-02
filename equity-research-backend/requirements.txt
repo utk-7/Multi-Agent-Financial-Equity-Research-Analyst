@@ -2,7 +2,8 @@ fastapi
 uvicorn
 httpx
 langgraph
-langchain-anthropic
+langchain-openai
+tenacity
 pydantic
 yfinance
 python-dotenv

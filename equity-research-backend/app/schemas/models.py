@@ -11,6 +11,11 @@ class FundamentalsSchema(BaseModel):
     total_equity: Optional[float] = None
     free_cash_flow: Optional[float] = None
     operating_cash_flow: Optional[float] = None
+    gross_profit: Optional[float] = None
+    operating_income: Optional[float] = None
+    current_assets: Optional[float] = None
+    current_liabilities: Optional[float] = None
+    beta: Optional[float] = None
 
 class InjectionScreenResult(BaseModel):
     flagged: bool
