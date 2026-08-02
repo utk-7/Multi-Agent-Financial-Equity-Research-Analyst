@@ -3,11 +3,28 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-finance-dark: #0f172a;
-  --color-finance-card: #1e293b;
-  --color-finance-accent: #0ea5e9;
+  --color-finance-dark: #12121f;
+  --color-finance-card: #1c1c2c;
+  --color-finance-accent: #3b82f6; /* Fallback base color */
   --color-finance-text: #f8fafc;
-  --color-finance-muted: #94a3b8;
+  --color-finance-muted: #8b8ba7; /* Muted lavender/gray */
+  
+  --color-finance-grad-start: #14b8a6; /* Teal */
+  --color-finance-grad-end: #3b82f6; /* Blue */
+}
+
+@utility bg-finance-gradient {
+  background: linear-gradient(to right, var(--color-finance-grad-start), var(--color-finance-grad-end));
+}
+
+@utility text-finance-gradient {
+  background: linear-gradient(to right, var(--color-finance-grad-start), var(--color-finance-grad-end));
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility border-finance-gradient {
+  border-image: linear-gradient(to bottom, var(--color-finance-grad-start), var(--color-finance-grad-end)) 1;
 }
 
 @layer base {

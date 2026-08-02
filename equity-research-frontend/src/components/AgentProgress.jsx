@@ -3,26 +3,29 @@ import { CheckCircle2, Circle, Loader2, XCircle } from 'lucide-react';
 
 const NodeItem = ({ id, label, status, summary, error }) => {
   let icon = <Circle className="w-5 h-5 text-finance-muted" />;
-  let borderClass = 'border-slate-700 bg-slate-800/50';
+  let borderClass = 'bg-slate-800/20'; // Soft background, no hard borders
   
   if (status === 'running') {
-    icon = <Loader2 className="w-5 h-5 text-finance-accent animate-spin" />;
-    borderClass = 'border-finance-accent/50 bg-[#0ea5e9]/10 shadow-[0_0_15px_rgba(14,165,233,0.2)]';
+    icon = <Loader2 className="w-5 h-5 text-finance-grad-start animate-spin" />;
+    borderClass = 'bg-finance-card relative overflow-hidden shadow-lg shadow-black/10';
   } else if (status === 'completed') {
-    icon = <CheckCircle2 className="w-5 h-5 text-emerald-400" />;
-    borderClass = 'border-emerald-500/30 bg-emerald-900/10';
+    icon = <div className="bg-finance-gradient rounded-full p-0.5"><CheckCircle2 className="w-4 h-4 text-white" /></div>;
+    borderClass = 'bg-finance-card shadow-sm shadow-black/10';
   } else if (status === 'error') {
     icon = <XCircle className="w-5 h-5 text-red-400" />;
-    borderClass = 'border-red-500/50 bg-red-900/20';
+    borderClass = 'bg-red-900/10';
   }
 
   return (
-    <div className={`p-4 rounded-lg border transition-all duration-300 flex flex-col gap-2 ${borderClass}`}>
+    <div className={`p-4 rounded-[16px] transition-all duration-300 flex flex-col gap-2 ${borderClass}`}>
+      {status === 'running' && (
+        <div className="absolute left-0 top-0 bottom-0 w-1 bg-finance-gradient" />
+      )}
       <div className="flex items-center gap-3">
         {icon}
         <span className="font-medium text-slate-200">{label}</span>
       </div>
-      {summary && <div className="text-sm text-slate-400 ml-8">{summary}</div>}
+      {summary && <div className="text-sm text-finance-muted ml-8">{summary}</div>}
       {error && <div className="text-sm text-red-400 ml-8">{error}</div>}
     </div>
   );
