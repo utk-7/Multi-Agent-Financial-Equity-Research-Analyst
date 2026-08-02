@@ -1,15 +1,21 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 @theme {
   --color-finance-dark: #0f172a;
   --color-finance-card: #1e293b;
-  --color-finance-accent: #0ea5e9; /* teal/blue */
+  --color-finance-accent: #0ea5e9;
   --color-finance-text: #f8fafc;
   --color-finance-muted: #94a3b8;
 }
 
 @layer base {
   body {
-    @apply bg-finance-dark text-finance-text font-sans antialiased;
+    @apply bg-slate-50 text-slate-900 font-sans antialiased transition-colors duration-300;
+  }
+  
+  .dark body {
+    @apply bg-finance-dark text-finance-text;
   }
 }
