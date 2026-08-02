@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+httpx
+langgraph
+langchain-anthropic
+pydantic
+yfinance
+python-dotenv
+weasyprint
+Jinja2
+pytest
+langsmith
+beautifulsoup4
