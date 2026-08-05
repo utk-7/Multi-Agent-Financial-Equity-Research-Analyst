@@ -41,16 +41,13 @@ The backend utilizes LangGraph to orchestrate the research process:
 
 ## 📸 Screenshots
 
+![Screenshot 9](./docs/images/Screenshot%202026-08-05%20204941.png)
+![Screenshot 8](./docs/images/Screenshot%202026-08-05%20204856.png)
 ![Screenshot 1](./docs/images/Screenshot%202026-08-03%20025502.png)
-![Screenshot 2](./docs/images/Screenshot%202026-08-05%20204646.png)
-![Screenshot 3](./docs/images/Screenshot%202026-08-05%20204656.png)
 ![Screenshot 4](./docs/images/Screenshot%202026-08-05%20204716.png)
 ![Screenshot 5](./docs/images/Screenshot%202026-08-05%20204737.png)
 ![Screenshot 6](./docs/images/Screenshot%202026-08-05%20204757.png)
 ![Screenshot 7](./docs/images/Screenshot%202026-08-05%20204815.png)
-![Screenshot 8](./docs/images/Screenshot%202026-08-05%20204856.png)
-![Screenshot 9](./docs/images/Screenshot%202026-08-05%20204941.png)
-![Screenshot 10](./docs/images/Screenshot%202026-08-05%20205034.png)
 ![Screenshot 11](./docs/images/Screenshot%202026-08-05%20205206.png)
 
 ## 🛠️ Getting Started
