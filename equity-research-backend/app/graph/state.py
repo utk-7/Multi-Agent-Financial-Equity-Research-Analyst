@@ -1,5 +1,8 @@
-from typing import TypedDict, Literal, Optional, List, Dict, Any
-from app.schemas.models import FundamentalsSchema, InjectionScreenResult, DCFValuationSchema
+from typing import Any, Dict, List, Literal, Optional, TypedDict
+
+from app.schemas.models import (DCFValuationSchema, FundamentalsSchema,
+                                InjectionScreenResult)
+
 
 class AgentState(TypedDict):
     ticker: str

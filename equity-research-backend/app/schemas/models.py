@@ -1,5 +1,7 @@
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
+
 
 class FundamentalsSchema(BaseModel):
     ticker: str
@@ -17,9 +19,11 @@ class FundamentalsSchema(BaseModel):
     current_liabilities: Optional[float] = None
     beta: Optional[float] = None
 
+
 class InjectionScreenResult(BaseModel):
     flagged: bool
     matched_patterns: List[str] = Field(default_factory=list)
+
 
 class DCFScenarioOutput(BaseModel):
     projections: List[float]
@@ -28,6 +32,7 @@ class DCFScenarioOutput(BaseModel):
     implied_equity_value: float
     implied_fcf_cagr_5yr: Optional[float] = None
     market_premium_vs_dcf_percent: Optional[float] = None
+
 
 class DCFValuationSchema(BaseModel):
     wacc: float
