@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: equity-research-backend
+    runtime: python
+    rootDir: equity-research-backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        sync: false
+      - key: ALPHA_VANTAGE_API_KEY
+        sync: false
+      - key: LANGSMITH_API_KEY
+        sync: false
+      - key: LANGCHAIN_TRACING_V2
+        value: true
+      - key: LANGCHAIN_PROJECT
+        value: equity-research-analyst
+      - key: SEC_EDGAR_USER_AGENT
+        sync: false
+      - key: FRONTEND_URL
+        sync: false

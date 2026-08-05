@@ -105,6 +105,27 @@ async def run_graph_endpoint(req: RunRequest):
                 logger.info("Resume event triggered. Emitting run_resumed.")
                 yield f"event: run_resumed\ndata: {json.dumps({'status': 'resumed'})}\n\n"
 
+                async for event in graph.astream_events(None, config=config, version="v1"):
+                    kind = event["event"]
+                    metadata = event.get("metadata", {})
+
+                    if (
+                        kind == "on_chain_start"
+                        and metadata.get("langgraph_node")
+                        and metadata["langgraph_node"] != "__start__"
+                    ):
+                        node_name = metadata["langgraph_node"]
+                        yield f"event: node_started\ndata: {json.dumps({'node': node_name})}\n\n"
+
+                    elif (
+                        kind == "on_chain_end"
+                        and metadata.get("langgraph_node")
+                        and metadata["langgraph_node"] != "__start__"
+                    ):
+                        node_name = metadata["langgraph_node"]
+                        clean_name = node_name.replace("_", " ").title()
+                        yield f"event: node_completed\ndata: {json.dumps({'node': node_name, 'output_summary': f'{clean_name} completed'})}\n\n"
+
             state_snap = graph.get_state(config)
             final_report = state_snap.values.get("final_report", {})
             eval_metrics = state_snap.values.get("eval_metrics", {})
@@ -132,8 +153,6 @@ async def approve_endpoint(req: ApproveRequest):
     logger.info(f"Received approval for thread {thread_id}")
 
     graph.update_state(config, {"red_flags": req.red_flags})
-
-    await graph.ainvoke(None, config=config)
 
     if thread_id in active_runs:
         active_runs[thread_id]["resume_event"].set()

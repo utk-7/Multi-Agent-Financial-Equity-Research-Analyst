@@ -30,7 +30,7 @@ The backend utilizes LangGraph to orchestrate the research process:
 - Python 3.10+
 - [FastAPI](https://fastapi.tiangolo.com/) (REST API & SSE)
 - [LangGraph](https://python.langchain.com/docs/langgraph) (Agent Orchestration)
-- [OpenRouter](https://openrouter.ai/) / Llama 3 (LLM routing)
+- [OpenRouter](https://openrouter.ai/) / Nemotron 3 (LLM routing)
 - yfinance & Alpha Vantage (Financial Data)
 
 **Frontend**
@@ -64,7 +64,7 @@ Create a `.env` file in the `equity-research-backend` directory based on `.env.e
 
 ```env
 OPENROUTER_API_KEY="your_openrouter_api_key_here"
-LLM_MODEL="meta-llama/llama-3.3-70b-instruct:free"
+LLM_MODEL="nvidia/nemotron-3-ultra-550b-a55b:free"
 ALPHA_VANTAGE_API_KEY="your_alpha_vantage_key_here"
 LANGSMITH_API_KEY="your_langsmith_api_key_here"
 LANGCHAIN_TRACING_V2=true
