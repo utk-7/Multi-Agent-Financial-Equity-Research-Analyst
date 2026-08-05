@@ -41,11 +41,22 @@ The backend utilizes LangGraph to orchestrate the research process:
 
 ## 📸 Screenshots
 
-*(Replace with actual screenshots of the application)*
+*(Please ensure your screenshot files are placed in the `docs/images/` directory before pushing to GitHub)*
 
-- **Dashboard:** `![Dashboard Screenshot](./docs/images/dashboard.png)`
-- **Node Execution Trace:** `![Execution Trace](./docs/images/execution.png)`
-- **Exported PDF Report:** `![PDF Report](./docs/images/pdf-report.png)`
+- **Landing Page:** 
+  `![Landing Page](./docs/images/landing-page.png)`
+- **Node Execution Trace & Pipeline Progress:** 
+  `![Pipeline Progress](./docs/images/pipeline-progress.png)`
+- **Human-in-the-Loop Analyst Review (Red Flags):** 
+  `![Analyst Review Required](./docs/images/analyst-review.png)`
+- **Final Investment Thesis & Executive Summary:** 
+  `![Executive Summary](./docs/images/executive-summary.png)`
+- **Bull Case vs Bear Case Analysis:** 
+  `![Bull and Bear Cases](./docs/images/bull-bear-cases.png)`
+- **Synthesized View & Financials:** 
+  `![Synthesized View](./docs/images/synthesized-view.png)`
+- **Point-in-Time Ratio Analysis:** 
+  `![Ratio Analysis](./docs/images/ratio-analysis.png)`
 
 ## 🛠️ Getting Started
 

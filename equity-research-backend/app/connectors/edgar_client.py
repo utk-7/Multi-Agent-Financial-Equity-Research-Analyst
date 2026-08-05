@@ -76,11 +76,11 @@ def _extract_sections(raw_html: str) -> Tuple[Optional[str], Optional[str]]:
     text = re.sub(r"\n+", "\n", text)
     text = re.sub(r"\n+", "\n", text)
 
-    risk_factors_pattern = r"(?i)Item\s+1A\."
-    risk_factors_next = r"(?i)Item\s+1B\."
+    risk_factors_pattern = r"(?i)Item\s+1A\b\.?"
+    risk_factors_next = r"(?i)Item\s+1B\b\.?"
 
-    mda_pattern = r"(?i)Item\s+7\."
-    mda_next = r"(?i)Item\s+7A\."
+    mda_pattern = r"(?i)Item\s+7\b\.?"
+    mda_next = r"(?i)Item\s+7A\b\.?"
 
     risk_factors = _extract_section_robust(
         text, risk_factors_pattern, risk_factors_next
