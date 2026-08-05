@@ -2,6 +2,12 @@
 
 An AI-driven multi-agent system designed to automate financial equity research. This project leverages **LangGraph** to coordinate specialized AI agents that ingest financial data, analyze market sentiment, evaluate ratios, and perform DCF (Discounted Cash Flow) valuations. The results are synthesized into a comprehensive equity research report.
 
+## 🚀 Live Demo
+
+- **Frontend Application**: [https://multi-agent-financial-equity-resear-omega.vercel.app/](https://multi-agent-financial-equity-resear-omega.vercel.app/)
+- **Backend API**: [https://multi-agent-financial-equity-research.onrender.com](https://multi-agent-financial-equity-research.onrender.com)
+
+
 ## 🚀 Features
 
 - **Multi-Agent Architecture**: Specialized agents for data ingestion, ratio analysis, market sentiment, valuation, and red flag detection.
