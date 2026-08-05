@@ -12,7 +12,7 @@ function App() {
   const [hasStarted, setHasStarted] = useState(false);
   const [ticker, setTicker] = useState('');
   const [mode, setMode] = useState('verified');
-  const { events, latestEvent, isConnected, startStream, approve, editAndApprove } = useAgentStream(ticker, mode);
+  const { events, latestEvent, isConnected, startStream, approve, editAndApprove, threadId } = useAgentStream(ticker, mode);
 
   const handleStartRun = () => {
     if (ticker.trim() && !isConnected) {
@@ -66,7 +66,7 @@ function App() {
             )}
             
             {isComplete && (
-              <ReportView payload={latestEvent.payload} />
+              <ReportView payload={{ ...latestEvent.payload, threadId }} />
             )}
           </main>
         </div>

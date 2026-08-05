@@ -1,21 +1,35 @@
 import asyncio
 import json
 import logging
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from typing import Dict, Any, List
+import os
+import tempfile
 from dotenv import load_dotenv
 
-from app.graph.build_graph import build_equity_research_graph
-
-# Load environment variables
+# Load environment variables FIRST, before importing any langgraph/langchain modules
 load_dotenv(override=True)
+
+from fastapi import FastAPI, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse, FileResponse
+from pydantic import BaseModel
+from typing import Dict, Any, List
+
+from app.graph.build_graph import build_equity_research_graph
+from app.export.pdf_export import export_to_pdf
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s.%(msecs)03d - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 graph = build_equity_research_graph()
 
 # In-memory store to coordinate SSE streams and resumes
@@ -30,6 +44,9 @@ class ApproveRequest(BaseModel):
     thread_id: str
     red_flags: List[Dict[str, Any]]
 
+class ExportRequest(BaseModel):
+    thread_id: str
+
 @app.post("/run")
 async def run_graph_endpoint(req: RunRequest):
     thread_id = req.thread_id
@@ -43,8 +60,20 @@ async def run_graph_endpoint(req: RunRequest):
         state = {"ticker": req.ticker, "run_mode": req.run_mode}
         
         try:
-            # Execute up to the interrupt (or completion)
-            await graph.ainvoke(state, config=config)
+            # Execute up to the interrupt (or completion) using astream_events to capture node progress
+            async for event in graph.astream_events(state, config=config, version="v1"):
+                kind = event["event"]
+                metadata = event.get("metadata", {})
+                
+                # Check if it's a node event
+                if kind == "on_chain_start" and metadata.get("langgraph_node") and metadata["langgraph_node"] != "__start__":
+                    node_name = metadata["langgraph_node"]
+                    yield f"event: node_started\ndata: {json.dumps({'node': node_name})}\n\n"
+                    
+                elif kind == "on_chain_end" and metadata.get("langgraph_node") and metadata["langgraph_node"] != "__start__":
+                    node_name = metadata["langgraph_node"]
+                    clean_name = node_name.replace('_', ' ').title()
+                    yield f"event: node_completed\ndata: {json.dumps({'node': node_name, 'output_summary': f'{clean_name} completed'})}\n\n"
             
             # Check state snapshot to see if we paused
             state_snap = graph.get_state(config)
@@ -67,8 +96,10 @@ async def run_graph_endpoint(req: RunRequest):
             final_report = state_snap.values.get("final_report", {})
             eval_metrics = state_snap.values.get("eval_metrics", {})
             citations = state_snap.values.get("citations", [])
+            ratios = state_snap.values.get("ratios", {})
+            dcf_valuation = state_snap.values.get("dcf_valuation", {})
             
-            yield f"event: run_completed\ndata: {json.dumps({'status': 'done', 'final_report': final_report, 'eval_metrics': eval_metrics, 'citations': citations})}\n\n"
+            yield f"event: run_completed\ndata: {json.dumps({'status': 'done', 'final_report': final_report, 'eval_metrics': eval_metrics, 'citations': citations, 'ratio_table': ratios, 'valuation_range': dcf_valuation})}\n\n"
             
         except Exception as e:
             logger.error(f"Error in graph execution: {e}")
@@ -97,6 +128,55 @@ async def approve_endpoint(req: ApproveRequest):
         active_runs[thread_id]["resume_event"].set()
         
     return {"status": "success", "message": "Graph resumed"}
+
+def cleanup_temp_file(path: str):
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+    except Exception as e:
+        logger.error(f"Failed to cleanup temp file {path}: {e}")
+
+@app.post("/export")
+async def export_endpoint(req: ExportRequest, background_tasks: BackgroundTasks):
+    config = {"configurable": {"thread_id": req.thread_id}}
+    state_snap = graph.get_state(config)
+    
+    if not state_snap or not state_snap.values:
+        return {"error": "No state found for this thread_id"}
+        
+    state_dict = state_snap.values
+    
+    # Create temp file
+    fd, temp_pdf_path = tempfile.mkstemp(suffix=".pdf")
+    os.close(fd)
+    
+    # Try exporting
+    export_to_pdf(state_dict, temp_pdf_path)
+    
+    # Check if we got PDF or HTML fallback
+    if os.path.exists(temp_pdf_path) and os.path.getsize(temp_pdf_path) > 0:
+        file_to_send = temp_pdf_path
+        media_type = "application/pdf"
+        filename = f"{state_dict.get('ticker', 'Report')}_Equity_Research.pdf"
+    else:
+        # Check fallback html
+        fallback_path = temp_pdf_path.replace('.pdf', '.html')
+        if os.path.exists(fallback_path):
+            file_to_send = fallback_path
+            media_type = "text/html"
+            filename = f"{state_dict.get('ticker', 'Report')}_Equity_Research.html"
+            background_tasks.add_task(cleanup_temp_file, temp_pdf_path) # Cleanup empty pdf
+        else:
+            return {"error": "Failed to generate report file"}
+            
+    background_tasks.add_task(cleanup_temp_file, file_to_send)
+    
+    return FileResponse(
+        path=file_to_send, 
+        media_type=media_type, 
+        filename=filename,
+        headers={"Access-Control-Expose-Headers": "Content-Disposition"}
+    )
 
 if __name__ == "__main__":
     import uvicorn

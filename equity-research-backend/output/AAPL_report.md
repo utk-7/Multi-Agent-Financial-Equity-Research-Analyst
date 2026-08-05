@@ -11,14 +11,14 @@
 
     <div class="section">
         <h2>Executive Summary</h2>
-        <p>Apple Inc. (AAPL) presents a complex investment profile characterized by exceptional profitability and cash generation juxtaposed against significant near-term headwinds and a substantial valuation disconnect. The company demonstrates elite fundamental metrics: a gross margin of 46.9%, operating margin of 32.0%, net margin of 26.9%, and a return on equity of 151.9%. Free cash flow generation is robust at $98.8 billion with a high conversion rate of 88.2% from net income. However, the DCF valuation framework indicates a material gap between intrinsic value and current market pricing. The base case DCF implies an equity value of $1.43 trillion, the bull case $1.94 trillion, and the bear case $1.14 trillion, all substantially below the current market capitalization of $4.54 trillion. News sentiment is deeply negative at -0.75, driven by a weak revenue forecast, memory supply constraints, and slowing China sales. A confirmed liquidity risk exists with a current ratio of 0.89, as current liabilities of $165.6 billion exceed current assets of $148.0 billion. The debt-to-equity ratio stands at 1.14. The stock's beta of 1.10 indicates slightly above-market systematic risk.</p>
+        <p>Apple Inc. (AAPL) presents a complex investment profile characterized by exceptional profitability metrics contrasted with near-term headwinds and a significant valuation disconnect. The company generated $416.2B in revenue and $112.0B in net income, yielding a net margin of 26.9% and an ROE of 151.9%. Free cash flow of $98.8B converts at 88.2% of net income, underscoring strong cash generation. However, the current ratio of 0.89 flags liquidity risk, with current liabilities ($165.6B) exceeding current assets ($148.0B). News sentiment is deeply negative (-0.65 score), driven by slowing China sales, memory supply constraints, and Wall Street downgrades citing persistent memory chip inflation. DCF valuation reveals a wide scenario range: Base case implies an equity value of $1.44T with a 5-year FCF CAGR of 5.0% and a market premium of 2.13%; Bull case implies $1.95T with an 11.8% FCF CAGR and a 1.31% premium; Bear case implies $1.15T with a 0.22% FCF CAGR and a 2.93% premium. The current market capitalization of $4.52T sits substantially above all DCF-implied equity values, though the pre-computed market premium metrics indicate a low single-digit percentage premium relative to the Base case.</p>
     </div>
 
     <div class="metrics-grid">
         
         <div class="metric-box">
             <div class="metric-label">Market Cap</div>
-            <div class="metric-value">$4,537,070,911,488</div>
+            <div class="metric-value">$4,515,147,284,480</div>
         </div>
         <div class="metric-box">
             <div class="metric-label">Revenue</div>
@@ -28,30 +28,30 @@
         
         <div class="metric-box">
             <div class="metric-label">WACC</div>
-            <div class="metric-value">9.92%</div>
+            <div class="metric-value">9.86%</div>
         </div>
         
         
         <div class="metric-box">
             <div class="metric-label">News Sentiment</div>
-            <div class="metric-value">-0.75</div>
+            <div class="metric-value">-0.65</div>
         </div>
         
     </div>
 
     <div class="section">
         <h2>Bull Case</h2>
-        <p>The bull case centers on Apple's unparalleled earnings power and ecosystem moat. The company converts revenue to free cash flow at an 88.2% rate, generating $98.8 billion in FCF against $112.0 billion in net income. Operating margins of 32.0% and net margins of 26.9% reflect immense pricing power and operational leverage. The DCF bull scenario projects free cash flow growing from $117.8 billion to $172.5 billion over five years, implying an equity value of $1.94 trillion. This scenario assumes the company successfully navigates current supply chain constraints and re-accelerates growth in Greater China and through AI integration. The installed base monetization via Services (embedded in the high margin structure) provides a recurring revenue floor. Sensitivity analysis shows that even at a 9.9% WACC with a 3.0% terminal growth rate, the implied equity value reaches $1.52 trillion, offering a framework for upside if discount rates compress.</p>
+        <p>The Bull case rests on Apple's ability to accelerate FCF growth to an 11.8% 5-year CAGR, driving implied equity value to $1.95T (Bull scenario). This trajectory is supported by the company's entrenched ecosystem, pricing power evidenced by a 46.9% gross margin and 32.0% operating margin, and best-in-class FCF conversion of 88.2%. The sensitivity grid shows that even at a 9.9% WACC and 2.5% terminal growth, the Base case enterprise value reaches $1.53T; a lower WACC of 8.9% with 3.0% terminal growth pushes enterprise value to $1.89T. Long-term optionality from Apple Intelligence and potential foldable iPhone innovation could further expand the TAM. The market premium vs DCF of only 1.31% in the Bull scenario suggests limited downside if execution meets optimistic assumptions.</p>
     </div>
 
     <div class="section">
         <h2>Bear Case</h2>
-        <p>The bear case is anchored by three pillars: valuation excess, structural growth deceleration, and balance sheet fragility. The current market cap of $4.54 trillion implies a 2.3x premium to the DCF bull case ($1.94 trillion) and a 3.2x premium to the base case ($1.43 trillion). The DCF bear case models FCF stagnating near $92-100 billion annually, yielding an implied equity value of only $1.14 trillion. News sentiment of -0.75 reflects tangible catalysts: management has guided to a weak revenue forecast citing 'increasing impact' from memory shortages and acknowledged slowing China sales. The liquidity position is impaired with a current ratio of 0.89 (current liabilities $165.6B vs assets $148.0B), raising refinancing risk if operating cash flow of $111.5 billion comes under pressure. Leverage is elevated with a debt-to-equity ratio of 1.14. The beta of 1.10 amplifies downside capture in a risk-off environment.</p>
+        <p>The Bear case highlights structural deceleration with a 5-year FCF CAGR of just 0.22%, yielding an implied equity value of $1.15T (Bear scenario). Near-term catalysts are negative: sentiment score of -0.65 reflects a 7% after-hours drop, China sales slowdown, and memory supply constraints flagged by management. Multiple downgrades cite memory chip inflation persisting for 'several more quarters,' pressuring margins. The liquidity red flag is material: current ratio of 0.89 indicates current liabilities exceed current assets by $17.7B, creating potential short-term funding stress. At a 10.9% WACC and 2.0% terminal growth, the sensitivity grid shows enterprise value dropping to $1.29T. The market premium vs DCF of 2.93% in the Bear scenario implies the market is pricing in a more optimistic outcome than the Bear DCF warrants.</p>
     </div>
 
     <div class="section">
         <h2>Synthesized View</h2>
-        <p>AAPL is a high-quality compounder trading at a price that discounts decades of flawless execution. The fundamental engine is intact: 46.9% gross margins, 151.9% ROE, and $98.8B FCF are best-in-class. However, the DCF models—even under optimistic bull assumptions—fail to bridge the gap to the $4.54T market cap. The -0.75 sentiment score is not noise; it reflects a regime shift where supply constraints (memory) and geographic saturation (China) are pressuring the near-term growth algorithm that the market has historically extrapolated. The current ratio of 0.89 is a rare blemish for a mega-cap and warrants monitoring. The investment thesis reduces to a duration bet: at current levels, the investor is paying for 15+ years of high-growth FCF with zero margin of safety. A rational entry point would require either a meaningful de-rating toward the $1.4-1.9T DCF range or a demonstrable inflection in the product cycle (AI/on-device intelligence) that re-rates the terminal growth assumption above the 2.5% modeled. Until then, the risk/reward is asymmetric to the downside.</p>
+        <p>Synthesis requires reconciling the $4.52T market cap with DCF-implied equity values ranging from $1.15T (Bear) to $1.95T (Bull). The pre-computed market premium vs DCF metrics (Base: 2.13%, Bull: 1.31%, Bear: 2.93%) indicate the market prices a modest premium to the Base case DCF, but the absolute gap between market cap and DCF equity values is substantial. Fundamentals remain robust: 26.9% net margin, 151.9% ROE, and $98.8B FCF provide a high floor. However, the liquidity risk (current ratio 0.89) and negative sentiment catalyst cluster (China, memory constraints, downgrades) create near-term volatility. The WACC of 9.86% and beta of 1.086 suggest market-risk sensitivity. The investment thesis hinges on whether Apple can sustain mid-single-digit FCF growth (Base: 5.0% CAGR) amid component inflation and China saturation. If FCF growth reverts toward the Bear case 0.22%, the valuation gap widens dramatically. If Apple Intelligence and new form factors unlock the Bull case 11.8% CAGR, the current premium may be justified. The pre-computed sensitivity grid shows enterprise value highly sensitive to WACC and terminal growth assumptions, emphasizing the importance of discount rate and long-term growth debates.</p>
     </div>
 
     <div class="section">
@@ -94,10 +94,17 @@
     <div class="eval-section">
         <h2>Report Evaluation Metrics</h2>
         
-            <p><strong>Citation Coverage:</strong> 100.0%</p>
-            <p><strong>Strictly Grounded:</strong> Yes</p>
-            <p><strong>Total Claims Checked:</strong> 27</p>
+            <p><strong>Citation Coverage:</strong> 96.08%</p>
+            <p><strong>Strictly Grounded:</strong> No</p>
+            <p><strong>Total Claims Checked:</strong> 51</p>
             
+            
+                <h3>Unsupported Claims Found:</h3>
+                
+                    <div class="unsupported-claim">Long-term optionality from Apple Intelligence and potential foldable iPhone innovation could further expand the TAM.</div>
+                
+                    <div class="unsupported-claim">If Apple Intelligence and new form factors unlock the Bull case 11.8% CAGR, the current premium may be justified.</div>
+                
             
         
     </div>

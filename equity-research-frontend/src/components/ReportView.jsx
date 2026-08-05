@@ -21,19 +21,60 @@ export default function ReportView({ payload }) {
         <div>
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">Final Investment Thesis</h2>
           <div className="flex flex-wrap gap-4 text-sm">
-            <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+            <div className="flex items-center gap-6 mt-4 md:mt-0 bg-slate-50 dark:bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700/50">
+            <span className="flex items-center gap-2 text-sm">
               <BookOpen className="w-4 h-4 text-finance-accent" />
               <span className="font-semibold text-slate-900 dark:text-white">Coverage:</span> 
-              {metrics.citation_coverage_percent ?? 0}%
+              <span className={metrics.citation_coverage_percent === 100 ? "text-emerald-600 dark:text-emerald-400 font-bold" : ""}>
+                {metrics.citation_coverage_percent}%
+              </span>
             </span>
-            <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+            <div className="w-px h-4 bg-slate-300 dark:bg-slate-600"></div>
+            <span className="flex items-center gap-2 text-sm">
               <Scale className="w-4 h-4 text-finance-accent" />
               <span className="font-semibold text-slate-900 dark:text-white">Grounded:</span> 
               {metrics.groundedness ? 'Yes ✅' : 'No ❌'}
             </span>
           </div>
         </div>
-        <button className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md text-sm font-medium transition-colors shrink-0">
+        </div>
+        <button 
+          onClick={async () => {
+            try {
+              // Note: ReportView needs access to threadId. We'll pass it down from App.
+              // Assuming payload.threadId is available or we pass it directly.
+              // Wait, the easiest way to download a file from a POST request is fetching the blob.
+              const response = await fetch('http://localhost:8000/export', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ thread_id: payload.threadId })
+              });
+              
+              if (!response.ok) throw new Error("Export failed");
+              
+              const blob = await response.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              
+              // Try to get filename from Content-Disposition header
+              const disposition = response.headers.get('Content-Disposition');
+              let filename = 'report.pdf';
+              if (disposition && disposition.includes('filename=')) {
+                filename = disposition.split('filename=')[1].replace(/["']/g, '');
+              }
+              
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(url);
+              document.body.removeChild(a);
+            } catch (err) {
+              console.error("Failed to export PDF:", err);
+              alert("Failed to export PDF");
+            }
+          }}
+          className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md text-sm font-medium transition-colors shrink-0">
           Export PDF
         </button>
       </div>

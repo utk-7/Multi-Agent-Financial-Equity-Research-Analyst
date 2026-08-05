@@ -50,7 +50,7 @@ async def synthesis_node(state: AgentState, config: RunnableConfig) -> Dict[str,
     fundamentals_json = fundamentals.model_dump_json(indent=2) if fundamentals else "{}"
     ratios_json = json.dumps(ratios, indent=2)
     sentiment_json = json.dumps(news_sentiment, indent=2)
-    dcf_json = json.dumps(dcf_valuation, indent=2)
+    dcf_json = dcf_valuation.model_dump_json(indent=2) if hasattr(dcf_valuation, "model_dump_json") else json.dumps(dcf_valuation, indent=2)
     red_flags_json = json.dumps(red_flags, indent=2)
     
     prompt = f"""
@@ -66,7 +66,7 @@ Company Ratios:
 News Sentiment:
 {sentiment_json}
 
-DCF Valuation:
+DCF Valuation (including pre-computed 5-year CAGR and Market Premium/Discount metrics):
 {dcf_json}
 
 Approved Red Flags:
@@ -74,9 +74,10 @@ Approved Red Flags:
 
 CRITICAL RULES FOR YOUR ANALYSIS:
 1. STRICT GROUNDING: You may only reference figures, ratios, and facts that appear EXACTLY in the provided data above. 
-2. NO EXTERNAL KNOWLEDGE: Do not estimate or recall figures from general knowledge. Explicitly decline to state anything you cannot trace to the data.
-3. NO ARITHMETIC: Do not perform any new calculations (e.g., computing percentages, ratios, or differences). Only cite the pre-computed metrics provided.
-4. DISCLAIMER REQUIRED: Your output must include the disclaimer "This is research synthesis, not investment advice." in the designated field.
+2. PRE-COMPUTED METRICS: The data now explicitly includes pre-computed derived metrics (like implied 5-year CAGR and market premium/discount vs DCF value). You MAY and SHOULD cite these exact pre-computed figures directly from the data state. If a pre-computed metric is `null`/not present, do not state a value for it — explicitly note it could not be calculated for this scenario, rather than treating a missing value as zero.
+3. NO EXTERNAL KNOWLEDGE: Do not estimate or recall figures from general knowledge. Explicitly decline to state anything you cannot trace to the data.
+4. NO ARITHMETIC: Do not perform any new calculations whatsoever (e.g., computing percentages, growth rates, ratios, or differences). Only cite the pre-computed metrics provided.
+5. DISCLAIMER REQUIRED: Your output must include the disclaimer "This is research synthesis, not investment advice." in the designated field.
 """
 
     try:

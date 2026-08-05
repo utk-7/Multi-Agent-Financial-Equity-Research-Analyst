@@ -111,11 +111,25 @@ def perform_dcf_valuation(fundamentals: FundamentalsSchema) -> Dict[str, Any]:
         debt = fundamentals.total_debt or 0.0
         equity_val = ev - debt
         
+        # Calculate 5-year CAGR (Current FCF to Year 5 FCF)
+        current_fcf = fundamentals.free_cash_flow or 0.0
+        cagr_5yr = None
+        if current_fcf > 0 and projections and projections[-1] > 0:
+            cagr_5yr = (projections[-1] / current_fcf) ** (1/5) - 1
+            
+        # Calculate Market Premium vs DCF (e.g. 1.3 = market cap is 130% higher than DCF value)
+        market_cap = fundamentals.market_cap or 0.0
+        market_premium_vs_dcf_percent = None
+        if equity_val > 0:
+            market_premium_vs_dcf_percent = (market_cap / equity_val) - 1
+        
         scenarios_output[scenario] = {
             "projections": projections,
             "terminal_value": tv,
             "enterprise_value": ev,
-            "implied_equity_value": equity_val
+            "implied_equity_value": equity_val,
+            "implied_fcf_cagr_5yr": cagr_5yr,
+            "market_premium_vs_dcf_percent": market_premium_vs_dcf_percent
         }
         
     # Grid using base scenario projections
