@@ -35,8 +35,10 @@ export function useAgentStreamReal(ticker, runMode) {
     setLatestEvent(null);
     setError(null);
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    
     // We will use fetch to send the POST request, and then read the body as a stream
-    fetch('http://localhost:8000/run', {
+    fetch(`${API_BASE_URL}/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -106,8 +108,10 @@ export function useAgentStreamReal(ticker, runMode) {
   const approve = useCallback(async () => {
     if (!latestEvent || latestEvent.type !== 'interrupt_paused') return;
     
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    
     try {
-      await fetch('http://localhost:8000/approve', {
+      await fetch(`${API_BASE_URL}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -125,8 +129,10 @@ export function useAgentStreamReal(ticker, runMode) {
   const editAndApprove = useCallback(async (editedFlags) => {
     if (!latestEvent || latestEvent.type !== 'interrupt_paused') return;
     
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    
     try {
-      await fetch('http://localhost:8000/approve', {
+      await fetch(`${API_BASE_URL}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

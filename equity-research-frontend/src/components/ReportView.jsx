@@ -44,7 +44,8 @@ export default function ReportView({ payload }) {
               // Note: ReportView needs access to threadId. We'll pass it down from App.
               // Assuming payload.threadId is available or we pass it directly.
               // Wait, the easiest way to download a file from a POST request is fetching the blob.
-              const response = await fetch('http://localhost:8000/export', {
+              const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+              const response = await fetch(`${API_BASE_URL}/export`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ thread_id: payload.threadId })
