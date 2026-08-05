@@ -41,22 +41,17 @@ The backend utilizes LangGraph to orchestrate the research process:
 
 ## 📸 Screenshots
 
-*(Please ensure your screenshot files are placed in the `docs/images/` directory before pushing to GitHub)*
-
-- **Landing Page:** 
-  `![Landing Page](./docs/images/landing-page.png)`
-- **Node Execution Trace & Pipeline Progress:** 
-  `![Pipeline Progress](./docs/images/pipeline-progress.png)`
-- **Human-in-the-Loop Analyst Review (Red Flags):** 
-  `![Analyst Review Required](./docs/images/analyst-review.png)`
-- **Final Investment Thesis & Executive Summary:** 
-  `![Executive Summary](./docs/images/executive-summary.png)`
-- **Bull Case vs Bear Case Analysis:** 
-  `![Bull and Bear Cases](./docs/images/bull-bear-cases.png)`
-- **Synthesized View & Financials:** 
-  `![Synthesized View](./docs/images/synthesized-view.png)`
-- **Point-in-Time Ratio Analysis:** 
-  `![Ratio Analysis](./docs/images/ratio-analysis.png)`
+![Screenshot 1](./docs/images/Screenshot%202026-08-03%20025502.png)
+![Screenshot 2](./docs/images/Screenshot%202026-08-05%20204646.png)
+![Screenshot 3](./docs/images/Screenshot%202026-08-05%20204656.png)
+![Screenshot 4](./docs/images/Screenshot%202026-08-05%20204716.png)
+![Screenshot 5](./docs/images/Screenshot%202026-08-05%20204737.png)
+![Screenshot 6](./docs/images/Screenshot%202026-08-05%20204757.png)
+![Screenshot 7](./docs/images/Screenshot%202026-08-05%20204815.png)
+![Screenshot 8](./docs/images/Screenshot%202026-08-05%20204856.png)
+![Screenshot 9](./docs/images/Screenshot%202026-08-05%20204941.png)
+![Screenshot 10](./docs/images/Screenshot%202026-08-05%20205034.png)
+![Screenshot 11](./docs/images/Screenshot%202026-08-05%20205206.png)
 
 ## 🛠️ Getting Started
 
