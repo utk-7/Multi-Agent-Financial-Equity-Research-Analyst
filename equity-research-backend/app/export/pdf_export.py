@@ -28,7 +28,6 @@ def export_to_pdf(state: dict, output_path: str):
         logger.warning(
             f"Failed to generate PDF due to missing WeasyPrint/GTK3 dependencies. Skipping PDF generation. Error: {e}"
         )
-        # Save HTML instead as a fallback
         fallback_path = output_path.replace(".pdf", ".html")
         with open(fallback_path, "w", encoding="utf-8") as f:
             f.write(html_out)

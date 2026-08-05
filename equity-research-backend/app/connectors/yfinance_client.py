@@ -23,13 +23,11 @@ def fetch_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
         net_income = get_val(["netIncomeToCommon"])
         total_debt = get_val(["totalDebt"])
 
-        # Fallback to get total equity if not in info
         total_equity = get_val(["totalStockholderEquity", "totalEquity"])
         if total_equity is None:
             try:
                 bs = ticker.balance_sheet
                 if not bs.empty:
-                    # check for common labels
                     for label in [
                         "Stockholders Equity",
                         "Total Equity Gross Minority Interest",
@@ -39,7 +37,6 @@ def fetch_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
                             total_equity = float(bs.loc[label].iloc[0])
                             break
 
-                    # ultimate fallback: assets - liabilities
                     if (
                         total_equity is None
                         and "Total Assets" in bs.index
@@ -54,7 +51,6 @@ def fetch_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
         operating_cash_flow = get_val(["operatingCashflow"])
         free_cash_flow = get_val(["freeCashflow"])
 
-        # Override with statement data for exact period alignment
         try:
             cf = ticker.cashflow
             if not cf.empty:
@@ -71,7 +67,6 @@ def fetch_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
 
                 if ocf_row is not None:
                     operating_cash_flow = float(ocf_row.iloc[0])
-                    # Manual FCF (OCF + CapEx since CapEx is reported as negative)
                     if capex_row is not None:
                         free_cash_flow = float(ocf_row.iloc[0]) + float(
                             capex_row.iloc[0]
@@ -82,10 +77,8 @@ def fetch_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
         gross_profit = get_val(["grossProfits", "grossProfit"])
         operating_income = get_val(["operatingMargins"])
         if operating_income is not None and revenue is not None:
-            # operatingMargins is a percentage, convert to absolute
             operating_income = operating_income * revenue
 
-        # Override with income statement data for exact period alignment
         try:
             fin = ticker.financials
             if not fin.empty:

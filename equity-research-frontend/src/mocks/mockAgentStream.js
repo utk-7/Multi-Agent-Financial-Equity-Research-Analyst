@@ -23,17 +23,14 @@ export function useMockAgentStream(ticker, runMode) {
     setEvents([]);
     setLatestEvent(null);
 
-    // 1. run_started
     emit({ type: 'run_started', payload: { ticker: startTicker, run_mode: startRunMode } });
     await wait(1000);
 
-    // 2. ingestion
     emit({ type: 'node_started', payload: { node: 'ingestion' } });
     await wait(2000);
     emit({ type: 'node_completed', payload: { node: 'ingestion', output_summary: 'Pulled fundamentals + 10-K text' } });
     await wait(500);
 
-    // 3. parallel fan-out
     emit({ type: 'node_started', payload: { node: 'ratio' } });
     emit({ type: 'node_started', payload: { node: 'sentiment' } });
     emit({ type: 'node_started', payload: { node: 'valuation' } });
@@ -45,7 +42,6 @@ export function useMockAgentStream(ticker, runMode) {
         return;
     }
 
-    // 4. staggered completion
     await wait(1500);
     emit({ type: 'node_completed', payload: { node: 'ratio', output_summary: 'Computed financial ratios' } });
     await wait(1000);
@@ -54,12 +50,10 @@ export function useMockAgentStream(ticker, runMode) {
     emit({ type: 'node_completed', payload: { node: 'sentiment', output_summary: 'Scored recent news tone' } });
     await wait(500);
 
-    // 5. red_flag
     emit({ type: 'node_started', payload: { node: 'red_flag' } });
     await wait(2000);
     emit({ type: 'node_completed', payload: { node: 'red_flag', output_summary: 'Forensic checks completed' } });
 
-    // 6. interrupt
     if (startRunMode === 'verified') {
         emit({ 
             type: 'interrupt_paused', 
@@ -79,13 +73,11 @@ export function useMockAgentStream(ticker, runMode) {
         await wait(500);
     }
 
-    // 7. synthesis
     emit({ type: 'node_started', payload: { node: 'synthesis' } });
     await wait(2500);
     emit({ type: 'node_completed', payload: { node: 'synthesis', output_summary: 'Final thesis reconciled' } });
     await wait(500);
 
-    // 8. run_completed
     emit({ 
         type: 'run_completed', 
         payload: { 

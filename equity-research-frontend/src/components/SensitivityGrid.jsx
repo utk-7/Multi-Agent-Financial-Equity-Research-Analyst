@@ -5,9 +5,6 @@ import { Target, TrendingUp, AlertCircle } from 'lucide-react';
 export default function SensitivityGrid({ dcfValuation }) {
   if (!dcfValuation) return null;
   
-  // Create a stylized grid based on the valuation ranges
-  // In a real application with a full grid, this would parse sensitivity_matrix from backend
-  // For now, we will construct a visual based on Bear, Base, and Bull cases
   
   const baseValue = dcfValuation.base_case || 1;
   
@@ -17,7 +14,6 @@ export default function SensitivityGrid({ dcfValuation }) {
     { name: 'Bull Case', value: dcfValuation.bull_case, fill: '#10b981' }  // emerald-500
   ].filter(d => d.value);
 
-  // Format currency
   const formatValue = (val) => {
     if (val >= 1e12) return `$${(val / 1e12).toFixed(2)}T`;
     if (val >= 1e9) return `$${(val / 1e9).toFixed(2)}B`;

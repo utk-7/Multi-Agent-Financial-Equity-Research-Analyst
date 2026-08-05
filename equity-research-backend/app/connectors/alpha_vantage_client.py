@@ -16,7 +16,6 @@ def fetch_alpha_vantage_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
     base_url = "https://www.alphavantage.co/query"
 
     try:
-        # Fetch Overview
         overview_resp = httpx.get(
             f"{base_url}?function=OVERVIEW&symbol={ticker_symbol}&apikey={api_key}",
             timeout=10,
@@ -44,13 +43,11 @@ def fetch_alpha_vantage_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
         gross_profit = parse_float(overview_data.get("GrossProfitTTM"))
         beta = parse_float(overview_data.get("Beta"))
 
-        # Operating income from margin and revenue
         operating_margin = parse_float(overview_data.get("OperatingMarginTTM"))
         operating_income = None
         if operating_margin is not None and revenue is not None:
             operating_income = operating_margin * revenue
 
-        # Fetch Income Statement for Net Income
         is_resp = httpx.get(
             f"{base_url}?function=INCOME_STATEMENT&symbol={ticker_symbol}&apikey={api_key}",
             timeout=10,
@@ -60,7 +57,6 @@ def fetch_alpha_vantage_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
         if "annualReports" in is_data and is_data["annualReports"]:
             net_income = parse_float(is_data["annualReports"][0].get("netIncome"))
 
-        # Fetch Balance Sheet for Debt, Equity, Assets, Liabilities
         bs_resp = httpx.get(
             f"{base_url}?function=BALANCE_SHEET&symbol={ticker_symbol}&apikey={api_key}",
             timeout=10,
@@ -80,7 +76,6 @@ def fetch_alpha_vantage_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
             current_assets = parse_float(latest_bs.get("totalCurrentAssets"))
             current_liabilities = parse_float(latest_bs.get("totalCurrentLiabilities"))
 
-        # Fetch Cash Flow
         cf_resp = httpx.get(
             f"{base_url}?function=CASH_FLOW&symbol={ticker_symbol}&apikey={api_key}",
             timeout=10,
@@ -94,9 +89,6 @@ def fetch_alpha_vantage_fundamentals(ticker_symbol: str) -> FundamentalsSchema:
 
             capex = parse_float(latest_cf.get("capitalExpenditures"))
             if operating_cash_flow is not None and capex is not None:
-                # CapEx might be positive or negative depending on provider, assume we subtract or add correctly.
-                # Alpha Vantage usually reports capex as positive if it's an outflow.
-                # Let's subtract absolute value of capex.
                 free_cash_flow = operating_cash_flow - abs(capex)
 
         return FundamentalsSchema(

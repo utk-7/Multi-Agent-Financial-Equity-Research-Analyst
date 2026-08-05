@@ -4,20 +4,16 @@ import time
 
 logger = logging.getLogger(__name__)
 
-# Global lock to ensure only one LLM request is in-flight across the whole application
 _llm_lock = asyncio.Lock()
 
-# Track the last time a request was completed
 _last_request_time = 0.0
 
-# Minimum gap in seconds between LLM requests to satisfy 5 Req/Min
 MIN_GAP_SECONDS = 15.0
 
 import json
 import os
 from datetime import datetime
 
-# Path for tracking daily usage
 USAGE_FILE = os.path.join(os.path.dirname(__file__), "llm_usage.json")
 
 

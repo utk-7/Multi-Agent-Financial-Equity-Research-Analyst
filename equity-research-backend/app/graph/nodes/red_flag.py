@@ -62,14 +62,12 @@ async def red_flag_node(state: AgentState, config: RunnableConfig) -> Dict[str, 
         logger.warning(f"No fundamentals found for {ticker}. Skipping red flags.")
         return {"red_flags": []}
 
-    # 1. Run deterministic checks
     det_flags = compute_deterministic_red_flags(fundamentals)
     final_flags = []
     for f in det_flags:
         f["source"] = "deterministic"
         final_flags.append(f)
 
-    # 2. Prepare LLM Call
     llm = ChatOpenAI(
         model=os.getenv("LLM_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free"),
         openai_api_base="https://openrouter.ai/api/v1",
@@ -78,7 +76,6 @@ async def red_flag_node(state: AgentState, config: RunnableConfig) -> Dict[str, 
     )
     structured_llm = llm.with_structured_output(RedFlagLLMResult)
 
-    # Serialize context state for the prompt
     fundamentals_json = fundamentals.model_dump_json(indent=2)
     ratios = state.get("ratios", {})
     det_flags_text = json.dumps(det_flags, indent=2) if det_flags else "None"
@@ -123,7 +120,6 @@ If there are none, return an empty list. Do not simply restate the deterministic
                 )
     except Exception as e:
         logger.error(f"Error invoking LLM for red-flags on {ticker}: {e}")
-        # We still return the deterministic flags even if LLM fails
 
     logger.info(
         f"Red-Flag Agent completed for {ticker}. Found {len(final_flags)} flags."

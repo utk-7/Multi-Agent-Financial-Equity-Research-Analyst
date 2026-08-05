@@ -16,7 +16,6 @@ export default function ReportView({ payload }) {
   return (
     <div className="w-full max-w-4xl mx-auto p-8 bg-white dark:bg-finance-card rounded-xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden mt-6">
       
-      {/* Header */}
       <div className="border-b border-slate-200 dark:border-slate-700 pb-6 mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">Final Investment Thesis</h2>
@@ -41,9 +40,6 @@ export default function ReportView({ payload }) {
         <button 
           onClick={async () => {
             try {
-              // Note: ReportView needs access to threadId. We'll pass it down from App.
-              // Assuming payload.threadId is available or we pass it directly.
-              // Wait, the easiest way to download a file from a POST request is fetching the blob.
               const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
               const response = await fetch(`${API_BASE_URL}/export`, {
                 method: 'POST',
@@ -58,7 +54,6 @@ export default function ReportView({ payload }) {
               const a = document.createElement('a');
               a.href = url;
               
-              // Try to get filename from Content-Disposition header
               const disposition = response.headers.get('Content-Disposition');
               let filename = 'report.pdf';
               if (disposition && disposition.includes('filename=')) {
@@ -82,7 +77,6 @@ export default function ReportView({ payload }) {
 
       <div className="space-y-10">
         
-        {/* Executive Summary */}
         <section>
           <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-200 mb-4 flex items-center gap-2">
             Executive Summary
@@ -92,7 +86,6 @@ export default function ReportView({ payload }) {
           </p>
         </section>
 
-        {/* Bull / Bear Cases */}
         <div className="grid md:grid-cols-2 gap-6">
           <section className="p-5 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl border border-emerald-200/50 dark:border-emerald-900/30">
             <h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-400 mb-3 flex items-center gap-2">
@@ -112,7 +105,6 @@ export default function ReportView({ payload }) {
           </section>
         </div>
         
-        {/* Synthesized View */}
         <section>
           <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-200 mb-4 flex items-center gap-2">
             Synthesized View
@@ -122,7 +114,6 @@ export default function ReportView({ payload }) {
           </p>
         </section>
 
-        {/* Financial Ratios & Valuation */}
         <section>
           <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-200 mb-6 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-finance-accent" /> Financials & Valuation
@@ -166,7 +157,6 @@ export default function ReportView({ payload }) {
           <RatioTrendChart ratios={ratios} />
         </section>
 
-        {/* Red Flags */}
         {redFlags.length > 0 && (
           <section className="bg-amber-50/30 dark:bg-amber-900/5 p-6 rounded-xl border border-amber-200/50 dark:border-amber-800/30">
             <h3 className="text-lg font-semibold text-amber-700 dark:text-amber-500 mb-4 flex items-center gap-2">
@@ -183,7 +173,6 @@ export default function ReportView({ payload }) {
           </section>
         )}
         
-        {/* Citations */}
         {citations.length > 0 && (
         <section className="pt-6 border-t border-slate-200 dark:border-slate-700">
           <h3 className="text-sm font-semibold text-red-500 uppercase tracking-wider mb-4">Unsupported Claims (Citation Issues)</h3>

@@ -16,7 +16,6 @@ def test_check_fcf_divergence_flagged():
 
 
 def test_check_fcf_divergence_not_flagged():
-    # FCF is 60 > 50 (50% of 100)
     f = FundamentalsSchema(
         ticker="TEST", company_name="Test", net_income=100.0, free_cash_flow=60.0
     )
@@ -25,7 +24,6 @@ def test_check_fcf_divergence_not_flagged():
 
 
 def test_check_high_leverage_flagged():
-    # Debt = 250, Equity = 100 -> D/E = 2.5 > 2.0
     f = FundamentalsSchema(
         ticker="TEST", company_name="Test", total_debt=250.0, total_equity=100.0
     )
@@ -43,7 +41,6 @@ def test_check_high_leverage_not_flagged():
 
 
 def test_check_liquidity_risk_flagged():
-    # CA = 80, CL = 100 -> CA < CL
     f = FundamentalsSchema(
         ticker="TEST",
         company_name="Test",

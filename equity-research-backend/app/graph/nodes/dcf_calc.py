@@ -6,14 +6,11 @@ from app.schemas.models import FundamentalsSchema
 
 def calculate_wacc(fundamentals: FundamentalsSchema) -> float:
     """Calculates the Weighted Average Cost of Capital (WACC)."""
-    # 1. Cost of Equity (CAPM)
     beta = fundamentals.beta if fundamentals.beta is not None else config.DEFAULT_BETA
     cost_of_equity = config.RISK_FREE_RATE + (beta * config.EQUITY_RISK_PREMIUM)
 
-    # 2. Cost of Debt (After tax)
     cost_of_debt_after_tax = config.COST_OF_DEBT * (1 - config.TAX_RATE)
 
-    # 3. Capital Structure Weights
     market_cap = fundamentals.market_cap or 0.0
     total_debt = fundamentals.total_debt or 0.0
     total_capital = market_cap + total_debt
@@ -24,7 +21,6 @@ def calculate_wacc(fundamentals: FundamentalsSchema) -> float:
     weight_equity = market_cap / total_capital
     weight_debt = total_debt / total_capital
 
-    # 4. WACC
     wacc = (weight_equity * cost_of_equity) + (weight_debt * cost_of_debt_after_tax)
     return wacc
 
@@ -58,7 +54,6 @@ def project_cash_flows(fundamentals: FundamentalsSchema, scenario: str) -> List[
 def calculate_terminal_value(final_fcf: float, wacc: float, tgr: float) -> float:
     """Calculates terminal value using the Gordon Growth Model."""
     if wacc <= tgr:
-        # Prevent division by zero or negative terminal value due to growth > wacc
         return 0.0
     return (final_fcf * (1 + tgr)) / (wacc - tgr)
 
@@ -71,7 +66,6 @@ def calculate_enterprise_value(
     for i, cf in enumerate(projections, start=1):
         ev += cf / ((1 + wacc) ** i)
 
-    # Discount terminal value from year 5
     pv_tv = terminal_value / ((1 + wacc) ** 5)
     ev += pv_tv
     return ev
@@ -99,7 +93,6 @@ def generate_sensitivity_grid(
             tv = calculate_terminal_value(final_fcf, wacc, tgr)
             ev = calculate_enterprise_value(projections, tv, wacc)
 
-            # Simple implication of Equity Value (assuming Cash=0 as a proxy for EV if missing)
             debt = fundamentals.total_debt or 0.0
             implied_equity = ev - debt
 
@@ -127,13 +120,11 @@ def perform_dcf_valuation(fundamentals: FundamentalsSchema) -> Dict[str, Any]:
         debt = fundamentals.total_debt or 0.0
         equity_val = ev - debt
 
-        # Calculate 5-year CAGR (Current FCF to Year 5 FCF)
         current_fcf = fundamentals.free_cash_flow or 0.0
         cagr_5yr = None
         if current_fcf > 0 and projections and projections[-1] > 0:
             cagr_5yr = (projections[-1] / current_fcf) ** (1 / 5) - 1
 
-        # Calculate Market Premium vs DCF (e.g. 1.3 = market cap is 130% higher than DCF value)
         market_cap = fundamentals.market_cap or 0.0
         market_premium_vs_dcf_percent = None
         if equity_val > 0:
@@ -148,13 +139,11 @@ def perform_dcf_valuation(fundamentals: FundamentalsSchema) -> Dict[str, Any]:
             "market_premium_vs_dcf_percent": market_premium_vs_dcf_percent,
         }
 
-    # Grid using base scenario projections
     base_projections = scenarios_output["base"]["projections"]
     sensitivity_grid = generate_sensitivity_grid(
         fundamentals, wacc, config.TERMINAL_GROWTH_RATE, base_projections
     )
 
-    # Pre-compute sensitivity extremes at base WACC for the LLM
     base_wacc_label = f"{wacc:.1%}"
     equity_values_at_base_wacc = [
         val["implied_equity_value"]

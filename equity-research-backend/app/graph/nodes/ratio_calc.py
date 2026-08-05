@@ -15,27 +15,20 @@ def compute_ratios(fundamentals: FundamentalsSchema) -> Dict[str, Any]:
             return None
         return num / den
 
-    # 1. Gross Margin = Gross Profit / Revenue
     gross_margin = safe_divide(fundamentals.gross_profit, fundamentals.revenue)
 
-    # 2. Operating Margin = Operating Income / Revenue
     operating_margin = safe_divide(fundamentals.operating_income, fundamentals.revenue)
 
-    # 3. Net Margin = Net Income / Revenue
     net_margin = safe_divide(fundamentals.net_income, fundamentals.revenue)
 
-    # 4. Debt-to-Equity = Total Debt / Total Equity
     debt_to_equity = safe_divide(fundamentals.total_debt, fundamentals.total_equity)
 
-    # 5. Current Ratio = Current Assets / Current Liabilities
     current_ratio = safe_divide(
         fundamentals.current_assets, fundamentals.current_liabilities
     )
 
-    # 6. FCF Conversion = Free Cash Flow / Net Income
     fcf_conversion = safe_divide(fundamentals.free_cash_flow, fundamentals.net_income)
 
-    # 7. Return on Equity (ROE) = Net Income / Total Equity
     roe = safe_divide(fundamentals.net_income, fundamentals.total_equity)
 
     return {

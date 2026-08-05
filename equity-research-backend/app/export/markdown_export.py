@@ -21,8 +21,6 @@ def export_to_markdown(state: dict, output_path: str):
 
     html_out = template.render(state=state)
 
-    # Very basic HTML to Markdown for the text parts if we want pure markdown,
-    # but since MD accepts HTML, we can just save it. Let's strip the head/body tags for cleaner MD.
     body_content = re.search(r"<body>(.*?)</body>", html_out, re.DOTALL | re.IGNORECASE)
     if body_content:
         md_content = body_content.group(1).strip()

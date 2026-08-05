@@ -8,7 +8,6 @@ from app.guardrails.injection_screen import screen_text
 
 
 async def run_ingestion_node_async(ticker: str) -> dict:
-    # Wrapper for fallback
     def get_fundamentals_with_fallback(ticker_sym):
         try:
             fund = fetch_fundamentals(ticker_sym)
@@ -21,7 +20,6 @@ async def run_ingestion_node_async(ticker: str) -> dict:
             pass
         return fetch_alpha_vantage_fundamentals(ticker_sym)
 
-    # Run fetchers concurrently
     fundamentals_task = asyncio.to_thread(get_fundamentals_with_fallback, ticker)
     edgar_task = fetch_10k_text(ticker)
 
@@ -29,7 +27,6 @@ async def run_ingestion_node_async(ticker: str) -> dict:
         fundamentals_task, edgar_task
     )
 
-    # Screen text
     combined_text = f"{risk_factors or ''}\n\n{mda or ''}"
     screen_result = screen_text(combined_text)
 

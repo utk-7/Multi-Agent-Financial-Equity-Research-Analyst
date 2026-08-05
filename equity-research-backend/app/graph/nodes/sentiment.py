@@ -83,7 +83,6 @@ async def sentiment_node(state: AgentState, config: RunnableConfig) -> Dict[str,
             }
         }
 
-    # Swapped to OpenRouter Llama 3.3 70b Instruct Free Tier
     import os
 
     from langchain_openai import ChatOpenAI

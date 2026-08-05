@@ -37,23 +37,19 @@ from app.guardrails.citation_check import check_citations
 async def synthesis_node(state: AgentState, config: RunnableConfig) -> dict:
     logger.info(f"Running Synthesis Agent for {state.get('ticker')}")
 
-    # 1. Run Synthesis
     synth_result = await real_synthesis_node(state, config)
     final_report = synth_result.get("final_report")
 
     if not final_report:
         return {"final_report": None, "citations": [], "eval_metrics": {}}
 
-    # 2. Run Citation Enforcement
     citation_result = await check_citations(final_report, state)
 
-    # 3. Compute Eval Metrics
     eval_metrics = compute_eval_metrics(
         total_claims=citation_result.total_claims_checked,
         unsupported_claims=citation_result.unsupported_claims,
     )
 
-    # Construct updated state for export
     updated_state = {
         **state,
         "final_report": final_report,
@@ -61,7 +57,6 @@ async def synthesis_node(state: AgentState, config: RunnableConfig) -> dict:
         "eval_metrics": eval_metrics,
     }
 
-    # 4. Export
     ticker = state.get("ticker", "UNKNOWN")
     output_dir = os.path.join(os.path.dirname(__file__), "..", "..", "output")
     export_to_pdf(updated_state, os.path.join(output_dir, f"{ticker}_report.pdf"))
@@ -76,7 +71,6 @@ async def synthesis_node(state: AgentState, config: RunnableConfig) -> dict:
 
 
 async def human_review_node(state: AgentState, config: RunnableConfig) -> dict:
-    # Passthrough node just to act as an interrupt point
     logger.info(f"Human review completed for {state.get('ticker')}")
     return {}
 
@@ -99,23 +93,18 @@ def build_equity_research_graph():
     workflow.add_node("human_review", human_review_node)
     workflow.add_node("synthesis", synthesis_node)
 
-    # Edges
     workflow.add_edge(START, "ingestion")
 
-    # Parallel fan-out
     workflow.add_edge("ingestion", "ratio")
     workflow.add_edge("ingestion", "sentiment")
     workflow.add_edge("ingestion", "valuation")
 
-    # Fan-in
     workflow.add_edge("ratio", "fan_in")
     workflow.add_edge("sentiment", "fan_in")
     workflow.add_edge("valuation", "fan_in")
 
-    # Run Red-Flag after everything else completes
     workflow.add_edge("fan_in", "red_flag")
 
-    # Routing after red_flag
     workflow.add_conditional_edges(
         "red_flag",
         route_after_red_flag,
@@ -124,8 +113,6 @@ def build_equity_research_graph():
     workflow.add_edge("human_review", "synthesis")
     workflow.add_edge("synthesis", END)
 
-    # We add a MemorySaver checkpointer to persist state and allow interrupts
     memory = MemorySaver()
 
-    # We compile with an interrupt before 'human_review'
     return workflow.compile(checkpointer=memory, interrupt_before=["human_review"])

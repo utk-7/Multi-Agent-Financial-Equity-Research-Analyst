@@ -55,22 +55,17 @@ export default function AgentProgress({ events }) {
     <div className="w-full max-w-4xl mx-auto p-6 flex flex-col gap-6">
       <h2 className="text-xl font-semibold text-slate-100 mb-2">Pipeline Progress</h2>
       
-      {/* 1. Ingestion */}
       <NodeItem id="ingestion" label="Ingestion & Data" {...nodeStates.ingestion} />
       
-      {/* 2. Parallel fan-out */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pl-8 border-l-2 border-slate-700 ml-4 relative">
-        {/* Subtle connecting line for the fan-out structure */}
         <div className="absolute -left-[2px] top-4 bottom-4 w-0.5 bg-slate-700"></div>
         <NodeItem id="ratio" label="Ratio / Quant" {...nodeStates.ratio} />
         <NodeItem id="sentiment" label="Sentiment" {...nodeStates.sentiment} />
         <NodeItem id="valuation" label="DCF Valuation" {...nodeStates.valuation} />
       </div>
 
-      {/* 3. Red Flag */}
       <NodeItem id="red_flag" label="Red-Flag Checks" {...nodeStates.red_flag} />
 
-      {/* 4. Synthesis */}
       <NodeItem id="synthesis" label="Report Synthesis" {...nodeStates.synthesis} />
     </div>
   );

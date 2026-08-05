@@ -5,8 +5,6 @@ export default function ApprovalPanel({ redFlags = [], onApprove }) {
   const [isEditing, setIsEditing] = useState(false);
   
   const handleApprove = () => {
-    // In a real app, if isEditing, we would collect the modified text from inputs.
-    // For Phase 0, we just mock the interface callback behavior.
     onApprove(isEditing ? redFlags.map(f => f.id) : [], redFlags.map(f => f.id));
   };
 

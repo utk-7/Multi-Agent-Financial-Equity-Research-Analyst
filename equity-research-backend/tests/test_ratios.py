@@ -30,7 +30,6 @@ def test_compute_ratios_happy_path():
 
 
 def test_compute_ratios_missing_data():
-    # Only revenue and net_income are present
     fundamentals = FundamentalsSchema(
         ticker="TEST", company_name="Test Corp", revenue=1000.0, net_income=100.0
     )
@@ -38,7 +37,6 @@ def test_compute_ratios_missing_data():
     ratios = compute_ratios(fundamentals)
 
     assert ratios["net_margin"] == 0.1
-    # Everything else should be None because of missing inputs
     assert ratios["gross_margin"] is None
     assert ratios["operating_margin"] is None
     assert ratios["debt_to_equity"] is None
@@ -63,8 +61,6 @@ def test_compute_ratios_divide_by_zero():
 
     ratios = compute_ratios(fundamentals)
 
-    # All calculations that divide by revenue (0), equity (0),
-    # liabilities (0), or net_income (0) should yield None gracefully.
     assert ratios["gross_margin"] is None
     assert ratios["net_margin"] is None
     assert ratios["debt_to_equity"] is None

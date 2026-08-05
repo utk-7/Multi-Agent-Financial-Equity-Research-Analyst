@@ -5,9 +5,6 @@ import { Activity } from 'lucide-react';
 export default function RatioTrendChart({ ratios }) {
   if (!ratios || Object.keys(ratios).length === 0) return null;
   
-  // Convert flat object of ratios into an array suitable for Recharts
-  // e.g. { gross_margin: 0.469, operating_margin: 0.32, ... }
-  // to [{ name: 'Gross Margin', value: 0.469, type: 'margin' }, ...]
   
   const data = Object.entries(ratios)
     .filter(([_, val]) => typeof val === 'number')

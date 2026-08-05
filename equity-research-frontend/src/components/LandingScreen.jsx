@@ -4,7 +4,6 @@ export default function LandingScreen({ onStart }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] text-center px-4">
       <div className="relative mb-6">
-        {/* Ambient glow behind hero text */}
         <div className="absolute inset-0 bg-finance-gradient blur-[100px] rounded-full w-full h-full opacity-20 dark:opacity-30 -z-10" />
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-white pb-2">
           Multi-Agent <br className="md:hidden" />

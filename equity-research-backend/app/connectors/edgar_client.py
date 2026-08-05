@@ -67,7 +67,6 @@ async def _get_cik(client: httpx.AsyncClient, ticker: str) -> Optional[str]:
 def _extract_sections(raw_html: str) -> Tuple[Optional[str], Optional[str]]:
     soup = BeautifulSoup(raw_html, "html.parser")
 
-    # Unwrap inline tags to prevent them from introducing spurious separators/newlines mid-word
     for tag in soup.find_all(["span", "font", "b", "i", "u", "a", "strong", "em"]):
         tag.unwrap()
     soup.smooth()
@@ -102,28 +101,24 @@ def _extract_section_robust(
     for start_match in starts:
         start_idx = start_match.start()
 
-        # find the next end_pattern that occurs after this start_match
         next_end = None
         for end_match in ends:
             if end_match.start() > start_idx:
                 next_end = end_match.start()
                 break
 
-        # if we found an end, compute the distance
         if next_end:
             gap = next_end - start_idx
             if gap > max_gap:
                 max_gap = gap
                 best_text = text[start_idx:next_end]
         else:
-            # if no end found after this start, maybe it's the last section (rare but possible)
             gap = len(text) - start_idx
             if gap > max_gap:
                 max_gap = gap
                 best_text = text[start_idx : start_idx + max_length]
 
     if best_text and max_gap > 1000:
-        # Cap the length
         return best_text[:max_length]
 
     return None

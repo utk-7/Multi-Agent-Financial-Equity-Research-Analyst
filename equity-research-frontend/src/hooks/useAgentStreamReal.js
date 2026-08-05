@@ -6,10 +6,8 @@ export function useAgentStreamReal(ticker, runMode) {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState(null);
   
-  // Store the thread_id to resume later
   const threadIdRef = useRef(null);
   
-  // Generate a random thread ID for this session
   if (!threadIdRef.current) {
     threadIdRef.current = `thread_${Date.now()}_${Math.random().toString(36).substring(7)}`;
   }
@@ -17,11 +15,6 @@ export function useAgentStreamReal(ticker, runMode) {
   const handleEvent = useCallback((type, data) => {
     const eventObj = { type, payload: data };
     
-    // Convert backend events to frontend expected formats where necessary
-    // Example: node_started, node_completed, etc.
-    // Wait, the backend emits 'interrupt_paused', 'run_resumed', 'run_completed'
-    // but the frontend UI AgentProgress.jsx expects 'node_started', 'node_completed' for progress
-    // Wait, let's look at what the mock was emitting!
     
     setEvents(prev => [...prev, eventObj]);
     setLatestEvent(eventObj);
@@ -37,7 +30,6 @@ export function useAgentStreamReal(ticker, runMode) {
 
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     
-    // We will use fetch to send the POST request, and then read the body as a stream
     fetch(`${API_BASE_URL}/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -119,7 +111,6 @@ export function useAgentStreamReal(ticker, runMode) {
           red_flags: latestEvent.payload.red_flags
         })
       });
-      // The open fetch stream will naturally receive run_resumed and continue
     } catch(err) {
       console.error("Approval error:", err);
       setError(err.message);
